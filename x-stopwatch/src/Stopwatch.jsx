@@ -11,6 +11,8 @@ const Stopwatch = () => {
     if (isRunning) {
       // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
       intervalId = setInterval(() => setTime(time + 1), 10);
+    } else {
+      clearInterval(intervalId);
     }
     return () => clearInterval(intervalId);
   }, [isRunning, time]);
