@@ -1,48 +1,53 @@
 import { useState, useEffect } from "react";
 
 const Stopwatch = () => {
-  const [time, setTime] = useState(0);
+  const [curTime, setCurTime] = useState(0);
+  const [toggle, setToggle] = useState("Start");
+  const [reset, setReset] = useState(false);
 
-  // state to check stopwatch running or not
-  const [isRunning, setIsRunning] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
 
-  useEffect(() => {
-    let intervalId;
-    if (isRunning) {
-      // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
-      intervalId = setInterval(() => setTime(time + 1), 10);
+  const handleWatch = (id) => {
+    toggle === "Start" ? setToggle("Stop") : setToggle("Start");
+    if (!intervalId) {
+      const timer = setInterval(() => {
+        setCurTime((prev) => prev + 1);
+      }, 1000);
+      setIntervalId(timer);
     } else {
       clearInterval(intervalId);
+      setIntervalId(null);
     }
-    return () => clearInterval(intervalId);
-  }, [isRunning, time]);
-
-  // Minutes calculation
-  const minutes = Math.floor((time % 360000) / 6000);
-
-  // Seconds calculation
-  const seconds = Math.floor((time % 6000) / 100);
-
-  // Method to start and stop timer
-  const startAndStop = () => {
-    setIsRunning(!isRunning);
   };
 
-  // Method to reset timer back to 0
-  const reset = () => {
-    setTime(0);
-    setIsRunning(false);
+  const handleReset = (id) => {
+    setCurTime(0);
+    if (id) {
+      clearInterval(id);
+      setIntervalId(null);
+    }
   };
+
+  const formatted = () => {
+    let minutes = Math.floor(Number(curTime) / 60);
+    let seconds = Number(curTime) % 60;
+    // if (String(minutes).length < 2) minutes = "0" + String(minutes);
+    if (String(seconds).length < 2) seconds = "0" + String(seconds);
+
+    return `${minutes}:${seconds}`; //60 + ' ' +;
+  };
+
   return (
     <div>
       <h1>Stopwatch</h1>
-      <p>
-        Time: {minutes.toString().padStart(1, "0")}:
-        {seconds.toString().padStart(2, "0")}
-      </p>
+      <div>Time: {formatted()}</div>
       <div>
-        <button onClick={startAndStop}>{isRunning ? "Stop" : "Start"}</button>
-        <button onClick={reset}>Reset</button>
+        <button type="button" onClick={() => handleWatch(intervalId)}>
+          {toggle}
+        </button>
+        <button type="button" onClick={() => handleReset(intervalId)}>
+          Reset
+        </button>
       </div>
     </div>
   );
