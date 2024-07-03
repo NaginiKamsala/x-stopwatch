@@ -1,24 +1,21 @@
 import { useState, useEffect } from "react";
-import styles from "./Stopwatch.module.css";
 
 const Stopwatch = () => {
-  const [time, setTime] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     let intervalId;
     if (isRunning) {
       // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
-      intervalId = setInterval(() => setTime(time + 1), 10);
+      intervalId = setInterval(() => {
+        setElapsedTime((time) => time + 1);
+      }, 1000);
+    } else {
+      clearInterval(intervalId);
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, time]);
-
-  // Minutes calculation
-  const minutes = Math.floor((time % 360000) / 6000);
-
-  // Seconds calculation
-  const seconds = Math.floor((time % 6000) / 100);
+  }, [isRunning]);
 
   // Method to start and stop timer
   const startAndStop = () => {
@@ -27,15 +24,19 @@ const Stopwatch = () => {
 
   // Method to reset timer back to 0
   const reset = () => {
-    setTime(0);
+    setIsRunning(false);
+    setElapsedTime(0);
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingseconds = Math.floor(seconds % 60);
+    return `${minutes}: ${remainingseconds < 10 ? "0" : ""}${remainingseconds}`;
   };
   return (
     <div>
       <h1>Stopwatch</h1>
-      <p>
-        Time: {minutes.toString().padStart(1, "0")}:
-        {seconds.toString().padStart(2, "0")}
-      </p>
+      <p>Time: {formatTime(elapsedTime)}</p>
       <div>
         <button onClick={startAndStop}>{isRunning ? "Stop" : "Start"}</button>
         <button onClick={reset}>Reset</button>
