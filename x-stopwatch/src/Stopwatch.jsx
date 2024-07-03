@@ -31,7 +31,9 @@ const Stopwatch = () => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingseconds = Math.floor(seconds % 60);
-    return `${minutes}: ${remainingseconds < 10 ? "0" : ""}${remainingseconds}`;
+    return `${minutes}: ${
+      remainingseconds < 10 ? "00" : ""
+    }${remainingseconds}`;
   };
   return (
     <div>
